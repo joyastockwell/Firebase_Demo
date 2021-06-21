@@ -3,9 +3,18 @@ const form = document.querySelector('#add-item-form');
 // Get a reference to the storage service, which is used to create references in your storage bucket
 var storage = firebase.storage();
 // Create a storage reference from our storage service
-var storageRef = storage.ref()
+var storageRef = storage.ref();
+
+imgRef2 = storageRef.child("Gummy_Shark.png");
+firebase.auth().signInAnonymously().then(function() {
+    imgRef2.getDownloadURL().then(function(url) {
+        document.querySelector('img').src = url;
+        //return url
+    })
+});
 
 function getFromStorage(stringName) {
+    console.log(stringName.concat(".png"));
     imgRef = storageRef.child(stringName.concat(".png"));
     /*imgRef.getDownloadURL().then(function(url) {
   var pulledProfileImage = url;
@@ -13,7 +22,6 @@ function getFromStorage(stringName) {
 });*/
     firebase.auth().signInAnonymously().then(function() {
         imgRef.getDownloadURL().then(function(url) {
-            console.log("hi, daniel!");
             var pulledImage = url;
             return pulledImage;
             //return url
@@ -33,16 +41,25 @@ function renderCafe(doc) {
     let li = document.createElement('li');
     let name = document.createElement('span');
     let color = document.createElement('span');
-    let img = document.createElement('img');
+    let image = document.createElement('img');
 
     li.setAttribute('data-id', doc.id);
     name.textContent = doc.data().name;
     color.textContent = doc.data().color;
-    img.src = getFromStorage(name.textContent.replace(" ", "_"));
+
+    currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
+    console.log(name.textContent.replace(" ", "_"));
+    firebase.auth().signInAnonymously().then(function() {
+        currImgRef.getDownloadURL().then(function(url) {
+            image.src = url;
+            //return url
+        })
+    });
+  //  img.src = getFromStorage(name.textContent.replace(" ", "_"));
 
     li.appendChild(name);
     li.appendChild(color);
-    li.appendChild(img);
+    li.appendChild(image);
 
     itemList.appendChild(li);
 }
@@ -63,11 +80,3 @@ db.collection('Items').get().then(snapshot => {
     form.city.value = '';
 })*/
 
-imgRef2 = storageRef.child("cowimage.jpeg");
-firebase.auth().signInAnonymously().then(function() {
-    imgRef2.getDownloadURL().then(function(url) {
-        console.log("hi, daniel again!");
-        document.querySelector('img').src = url;
-        //return url
-    })
-});
