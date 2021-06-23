@@ -1,7 +1,6 @@
 <html>
     <script type="module">
         import UploadForm from './UploadForm.js';
-        console.log(UploadForm);
     </script>
     <head>
         <link rel="stylesheet" href="styles.css">
@@ -13,7 +12,13 @@
     <body>
 
         <h1>Picture Play</h1>
-        <img/>
+        <div className="App">
+            <UploadForm />
+            <ImageGrid setSelectedImg={setSelectedImg} />
+            { selectedImg && (
+              <Modal selectedImg={selectedImg} setSelectedImg={setSelectedImg} />
+            )}
+        </div>
 
         <div class="content">
             <form id="add-item-form">

@@ -1,6 +1,7 @@
+//import UploadForm from './UploadForm';
 const itemList = document.querySelector('#item-list');
+//console.log(UploadForm);
 const form = document.querySelector('#add-item-form');
-console.log(form);
 // Get a reference to the storage service, which is used to create references in your storage bucket
 var storage = firebase.storage();
 // Create a storage reference from our storage service
@@ -38,18 +39,3 @@ form.addEventListener('submit', (e) => {
     form.name.value = '';
     form.color.value = '';
 })
-
-
-/*firebase.auth().signInAnonymously().then(function() {
-    console.log("hi, adam!");
-    imgRef.getDownloadURL().then(function(url)                           {
-        // Once we have the download URL, we set it to our img element
-        document.querySelector('img').src = url;
-        //document.getElementsByClassName("coffee_shop_img");
-        console.log("please print :D");
-    }).catch(function(error) {
-        // If anything goes wrong while getting the download URL, log the error
-        console.error(error);
-        console.log("hullo hullo");
-    });
-});*/
