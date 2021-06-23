@@ -1,5 +1,6 @@
 const itemList = document.querySelector('#item-list');
 const form = document.querySelector('#add-item-form');
+console.log(form);
 // Get a reference to the storage service, which is used to create references in your storage bucket
 var storage = firebase.storage();
 // Create a storage reference from our storage service
@@ -32,10 +33,10 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
     db.collection('Items').add({
         name:form.name.value,
-        city: form.city.value
+        color: form.color.value
     });
     form.name.value = '';
-    form.city.value = '';
+    form.color.value = '';
 })
 
 
