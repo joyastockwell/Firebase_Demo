@@ -16,7 +16,7 @@ function renderCafe(doc) {
     name.textContent = doc.data().name;
     color.textContent = doc.data().color;
 
-    currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
+    var currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
     console.log(name.textContent.replace(" ", "_"));
     firebase.auth().signInAnonymously().then(function() {
         console.log(currImgRef.name);
