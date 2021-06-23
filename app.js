@@ -3,21 +3,32 @@ const form = document.querySelector('#add-item-form');
 // Get a reference to the storage service, which is used to create references in your storage bucket
 var storage = firebase.storage();
 // Create a storage reference from our storage service
-var storageRef = storage.ref()
-/*var imgRef = storageRef.child('Watermelon.jpg');
-console.log(imgRef);*/
+var storageRef = storage.ref();
+
 
 function renderCafe(doc) {
     let li = document.createElement('li');
     let name = document.createElement('span');
     let color = document.createElement('span');
+    let image = document.createElement('img');
 
     li.setAttribute('data-id', doc.id);
     name.textContent = doc.data().name;
     color.textContent = doc.data().color;
 
+    var currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
+    console.log(name.textContent.replace(" ", "_"));
+    firebase.auth().signInAnonymously().then(function() {
+        console.log(currImgRef.name);
+        currImgRef.getDownloadURL().then(function(url) {
+            image.src = url;
+        })
+    });
+  //  img.src = getFromStorage(name.textContent.replace(" ", "_"));
+
     li.appendChild(name);
     li.appendChild(color);
+    li.appendChild(image);
 
     itemList.appendChild(li);
 }
@@ -32,23 +43,10 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
     db.collection('Items').add({
         name:form.name.value,
-        city: form.city.value
+        color: form.color.value
     });
+    console.log("hullo");
     form.name.value = '';
-    form.city.value = '';
+    form.color.value = '';
 })
 
-
-/*firebase.auth().signInAnonymously().then(function() {
-    console.log("hi, adam!");
-    imgRef.getDownloadURL().then(function(url)                           {
-        // Once we have the download URL, we set it to our img element
-        document.querySelector('img').src = url;
-        //document.getElementsByClassName("coffee_shop_img");
-        console.log("please print :D");
-    }).catch(function(error) {
-        // If anything goes wrong while getting the download URL, log the error
-        console.error(error);
-        console.log("hullo hullo");
-    });
-});*/
