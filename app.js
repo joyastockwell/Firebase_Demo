@@ -39,13 +39,14 @@ db.collection('Items').get().then(snapshot => {
     })
 })
 
-/*form.addEventListener('submit', (e) => {
+form.addEventListener('submit', (e) => {
     e.preventDefault();
     db.collection('Items').add({
         name:form.name.value,
-        city: form.city.value
+        color: form.color.value
     });
+    console.log("hullo");
     form.name.value = '';
-    form.city.value = '';
-})*/
+    form.color.value = '';
+})
 
