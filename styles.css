@@ -32,11 +32,12 @@ li{
     color: #555;
     position: relative;
     border-bottom: 1px solid #e6e6e6;
-    height: 46px;
+    height: 500px;
+    overflow: auto;
 }
 
+
 li:nth-child(even){
-    height: 500px;
     padding: 20px;
     background: #f2f2f2;
 }
