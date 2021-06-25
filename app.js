@@ -9,20 +9,24 @@ var storageRef = storage.ref();
 async function getTags(doc)  {
     var str = "";
     // Not very elegant, but I searched for an hour for an alternative and couldn't find one!
-    db.collection('Items').doc(doc.id)
+    await db.collection('Items').doc(doc.id)
         .collection('tags').get().then(snapshot => {
             snapshot.docs.forEach( doc => {
-                //console.log(doc.data().text);
                 str = str.concat("#");
                 str = str.concat(doc.data().text);
                 str = str.concat(" ");
             })
-        console.log(str);
-        return str;
-        });
+        })
+    return str;
 }
 
-async function renderItem(doc) {
+async function someTimeConsumingThing() {
+    return new Promise(function(resolve,reject) {
+      setTimeout(resolve, 2000);
+    })
+  }
+
+function renderItem(doc) {
     // create a list of an item's name, color, and image
     let li = document.createElement('li');
     let name = document.createElement('span');
@@ -37,9 +41,9 @@ async function renderItem(doc) {
     color.textContent = doc.data().color;
     tag.defaultValue = "tag";
     button.textContent = "Add Tag";
-    getTags(doc).then((value) => {
-        console.log("hi");
-        console.log(value);
+    
+    getTags(doc).then(str => {
+        tagList.textContent = str;
     });
 
     // items are currently matched to their images by name
@@ -53,7 +57,6 @@ async function renderItem(doc) {
 
     button.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log("hi daniel!");
         db.collection('Items').doc(doc.id).collection('tags').add({
             text: tag.value
         });
