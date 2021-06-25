@@ -6,14 +6,6 @@ var storage = firebase.storage();
 // Create a storage reference from our storage service
 var storageRef = storage.ref();
 
-async function addTag(str, id) {
-    console.log("hi");
-    db.collection('Items').doc(id).collection('tags').add({
-        text: str
-    });
-    console.log("hi 2");
-}
-
 async function getTags(doc)  {
     var str = "";
     // Not very elegant, but I searched for an hour for an alternative and couldn't find one!
@@ -59,7 +51,14 @@ async function renderItem(doc) {
         })
     });
 
-    button.addEventListener('click', addTag(tag.value, doc.id));
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log("hi daniel!");
+        db.collection('Items').doc(doc.id).collection('tags').add({
+            text: tag.value
+        });
+        button.value="tag";
+    })
 
     li.appendChild(name);
     li.appendChild(color);
@@ -82,10 +81,10 @@ db.collection('Items').get().then(snapshot => {
 // Currently doesn't add an image or a reference
 form.addEventListener('submit', (e) => {
     e.preventDefault();
-    // db.collection('Items').add({
-    //     name:form.name.value,
-    //     color: form.color.value
-    // });
+    db.collection('Items').add({
+        name:form.name.value,
+        color: form.color.value
+    });
     form.name.value = '';
     form.color.value = '';
 })
