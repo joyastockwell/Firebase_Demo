@@ -11,12 +11,16 @@ function renderCafe(doc) {
     let name = document.createElement('span');
     let color = document.createElement('span');
     let image = document.createElement('img');
+    let imageName = document.createElement('span');
 
     li.setAttribute('data-id', doc.id);
+    imageName.textContent = doc.data().imageName;
     name.textContent = doc.data().name;
     color.textContent = doc.data().color;
+    var currImgRef = storageRef.child(doc.id.concat("/").concat(((imageName.textContent))));
+    //var currImgRef = storageRef.child(doc.id.concat("/").concat((name.textContent.replace(" ", "_").concat(".png"))));
 
-    var currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
+    console.log("currImgRef is " + currImgRef);
     console.log(name.textContent.replace(" ", "_"));
     firebase.auth().signInAnonymously().then(function() {
         console.log(currImgRef.name);
