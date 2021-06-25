@@ -1,17 +1,18 @@
 <html>
+    <!--Imports-->
     <head>
         <link rel="stylesheet" href="styles.css">
         <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-firestore.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-storage.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-        <!--script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script-->
     </head>
     <body>
 
         <h1>Picture Playground</h1>
         <img/>
-
+        <!--Eventually the user will upload new food items' images, colors, and names here-->
+        <!--Adam has an upload form in an old project that he will add here-->
         <div class="content">
             <form id="add-item-form">
                 <input type = "text" name = "name" placeholder = "Item name">
@@ -23,7 +24,7 @@
         
         </script>  
         <script>
-            // Your web app's Firebase configuration
+            // web app's Firebase configuration
             var firebaseConfig = {
                 apiKey: "AIzaSyDoMfBU75qyHleZd1RVIfEqk1xgbSejsF4",
                 authDomain: "fir-storage-bc110.firebaseapp.com",
