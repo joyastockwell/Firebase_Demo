@@ -6,6 +6,8 @@ var storage = firebase.storage();
 // Create a storage reference from our storage service
 var storageRef = storage.ref();
 
+let currColor = "";
+
 async function getTags(doc)  {
     var str = "";
     // Not very elegant, but I searched for an hour for an alternative and couldn't find one!
@@ -17,9 +19,6 @@ async function getTags(doc)  {
                 str = str.concat(" ");
             })
         })
-        .catch((error) => {
-            console.log("Error in getTags for document " + doc.id + "\n", error);
-        })
     return str;
 }
 function renderItem(doc) {
@@ -30,6 +29,10 @@ function renderItem(doc) {
     let color = document.createElement('span');
     let image = document.createElement('img');
     let tagList = document.createElement('span');
+
+//    let imageName = document.createElement('span');
+//    let tag = document.createElement('input');
+//    let button = document.createElement('button');
 
     //retrieve image, name, and color
     let imageName = doc.data().imageName;
@@ -43,41 +46,45 @@ function renderItem(doc) {
     //retrieve tags
     getTags(doc).then(str => {
         tagList.textContent = str;
-    })
-    .catch((error) => {
-        console.log("Error getting tags for " + name.textContent + "\n", error);
     });
 
-    //sign into firebase anonymously and retrieve the image by its url
+    // items are currently matched to their images by name
+    // Daniel is working on an image storage scheme that uses references
+    //var currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
     firebase.auth().signInAnonymously().then(function() {
         currImgRef.getDownloadURL().then(function(url) {
             image.src = url;
         })
-        .catch((error) => {
-            console.log("Error getting image of " + name.textContent + "by url " + url + "\n", error);
-        })
-        .catch((error) => {
-            console.log("Sign in error\n", error);
-        })
     });
+    // .catch( error => {
+    //     console.log("Error getting image of item " + name.textContent, error);
+    // });
 
-    //put all the item's info and its image into a list to be rendered
+    // button.addEventListener('click', (e) => {
+    //     e.preventDefault();
+    //     db.collection('Items').doc(doc.id).collection('tags').add({
+    //         text: tag.value
+    //     });
+    //     button.value="tag";
+    // })
+
     li.appendChild(name);
     li.appendChild(color);
+    // li.appendChild(tag);
+    // li.appendChild(button);
     li.appendChild(image);
     li.appendChild(tagList);
 
     itemList.appendChild(li);
 }
 
-// render each item in the Items collection in Firebase
+// renders each item in the Items collection in Firebase
 db.collection('Items').get().then(snapshot => {
     snapshot.docs.forEach(doc => {
-        renderItem(doc);
+        console.log(doc.data().color);
+        if(!currColor) renderItem(doc);
+        else if(currColor == doc.data().color) renderItem(doc);
     })
-})
-.catch((error) => {
-    console.log("Error getting Items collection from Firestore\n", error);
 })
 
 // Adds a tag to an item in Firebase
@@ -86,8 +93,7 @@ form.addEventListener('submit', (e) => {
     // Gets the item with the same name the user entered
     db.collection('Items').where("name", "==", form.itemName.value).get()
     .then((querySnapshot) => {
-        // Adds tag to the tags collection of the item
-        // Creates tags collection if none is present
+        // TODO: Adds tag to item
         if(!querySnapshot.empty) {
             querySnapshot.forEach((doc) => {
                 db.collection('Items').doc(doc.id).collection('tags').add({
@@ -104,3 +110,13 @@ form.addEventListener('submit', (e) => {
     });
 })
 
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // Gets the item with the same name the user entered
+        // TODO: Adds tag to item
+        if(!querySnapshot.empty) currColor = form.colorName.value.get();
+        console.log(curColor);
+                //db.collection('Items').doc(doc.id).collection('tags').add({
+                    //text: form.tagName.value
+                //});
+})
