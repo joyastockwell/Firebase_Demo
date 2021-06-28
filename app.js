@@ -20,49 +20,56 @@ async function getTags(doc)  {
     return str;
 }
 function renderItem(doc) {
-    // create a list of an item's name, color, and image
+    // create html elements for the name, color, 
+    // image, and list of tags
     let li = document.createElement('li');
     let name = document.createElement('span');
     let color = document.createElement('span');
     let image = document.createElement('img');
-    let imageName = document.createElement('span');
-    let tag = document.createElement('input');
-    let button = document.createElement('button');
     let tagList = document.createElement('span');
 
+//    let imageName = document.createElement('span');
+//    let tag = document.createElement('input');
+//    let button = document.createElement('button');
+
+    //retrieve image, name, and color
+    let imageName = doc.data().imageName;
     li.setAttribute('data-id', doc.id);
-    imageName.textContent = doc.data().imageName;
     name.textContent = doc.data().name;
     color.textContent = doc.data().color;
-    var currImgRef = storageRef.child(doc.id.concat("/").concat(((imageName.textContent))));
-    tag.defaultValue = "tag";
-    button.textContent = "Add Tag";
+    var currImgRef = storageRef.child(doc.id.concat("/").concat(((imageName))));
+    // tag.defaultValue = "tag";
+    // button.textContent = "Add Tag";
     
+    //retrieve tags
     getTags(doc).then(str => {
         tagList.textContent = str;
     });
 
     // items are currently matched to their images by name
     // Daniel is working on an image storage scheme that uses references
-    var currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
+    //var currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
     firebase.auth().signInAnonymously().then(function() {
         currImgRef.getDownloadURL().then(function(url) {
             image.src = url;
         })
     });
+    // .catch( error => {
+    //     console.log("Error getting image of item " + name.textContent, error);
+    // });
 
-    button.addEventListener('click', (e) => {
-        e.preventDefault();
-        db.collection('Items').doc(doc.id).collection('tags').add({
-            text: tag.value
-        });
-        button.value="tag";
-    })
+    // button.addEventListener('click', (e) => {
+    //     e.preventDefault();
+    //     db.collection('Items').doc(doc.id).collection('tags').add({
+    //         text: tag.value
+    //     });
+    //     button.value="tag";
+    // })
 
     li.appendChild(name);
     li.appendChild(color);
-    li.appendChild(tag);
-    li.appendChild(button);
+    // li.appendChild(tag);
+    // li.appendChild(button);
     li.appendChild(image);
     li.appendChild(tagList);
 
@@ -76,15 +83,26 @@ db.collection('Items').get().then(snapshot => {
     })
 })
 
-// Adds a new item to the Items collection in Firebase
-// Currently doesn't add an image or a reference
+// Adds a tag to an item in Firebase
 form.addEventListener('submit', (e) => {
     e.preventDefault();
-    db.collection('Items').add({
-        name:form.name.value,
-        color: form.color.value
+    // Gets the item with the same name the user entered
+    db.collection('Items').where("name", "==", form.itemName.value).get()
+    .then((querySnapshot) => {
+        // TODO: Adds tag to item
+        if(!querySnapshot.empty) {
+            querySnapshot.forEach((doc) => {
+                db.collection('Items').doc(doc.id).collection('tags').add({
+                    text: form.tagName.value
+                });
+            })
+        }
+        else {
+            console.log("Tried to tag item that does not exist")
+        }
+    })
+    .catch((error) => {
+        console.log("Error getting user's item: ", error);
     });
-    form.name.value = '';
-    form.color.value = '';
 })
 
