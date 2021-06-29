@@ -8,8 +8,6 @@ var storage = firebase.storage();
 // Create a storage reference from our storage service
 var storageRef = storage.ref();
 
-let currColor = "";
-
 async function getTags(doc)  {
     var str = "";
     // Not very elegant, but I searched for an hour for an alternative and couldn't find one!
@@ -22,10 +20,6 @@ async function getTags(doc)  {
             })
         })
     return str;
-}
-
-function identifyCurrColor(doc) {
-    currColor = doc.data().preferredColor;
 }
 
 
