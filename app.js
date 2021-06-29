@@ -1,6 +1,8 @@
 const itemList = document.querySelector('#item-list');
 // This is the Add Item button and associated user input fields from index.html
 const form = document.querySelector('#add-item-form');
+// This is the color filter button
+const colorForm = document.querySelector('#filter-by-color-form')
 // Get a reference to the storage service
 var storage = firebase.storage();
 // Create a storage reference from our storage service
@@ -21,6 +23,13 @@ async function getTags(doc)  {
         })
     return str;
 }
+
+function identifyCurrColor(doc) {
+    currColor = doc.data().preferredColor;
+}
+
+
+
 function renderItem(doc) {
     // create html elements for the name, color, 
     // image, and list of tags
@@ -78,11 +87,17 @@ function renderItem(doc) {
     itemList.appendChild(li);
 }
 
+db.collection('users').get().then(snapshot => {
+    snapshot.docs.forEach(doc => {
+        currColor = doc.data().preferredColor;
+    })
+})
+
 // renders each item in the Items collection in Firebase
 db.collection('Items').get().then(snapshot => {
     snapshot.docs.forEach(doc => {
         console.log(doc.data().color);
-        if(!currColor) renderItem(doc);
+        if(currColor == "" || currColor == "all") renderItem(doc);
         else if(currColor == doc.data().color) renderItem(doc);
     })
 })
@@ -100,6 +115,9 @@ form.addEventListener('submit', (e) => {
                     text: form.tagName.value
                 });
             })
+            db.collection('users').doc('UnssDuX1ywdCwTFIqMOT').update({
+                preferredColor: "pink"
+            })
         }
         else {
             console.log("Tried to tag item that does not exist")
@@ -110,13 +128,10 @@ form.addEventListener('submit', (e) => {
     });
 })
 
-form.addEventListener('submit', (e) => {
+colorForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    // Gets the item with the same name the user entered
-        // TODO: Adds tag to item
-        if(!querySnapshot.empty) currColor = form.colorName.value.get();
-        console.log(curColor);
-                //db.collection('Items').doc(doc.id).collection('tags').add({
-                    //text: form.tagName.value
-                //});
+        //Goes into this when user submits a color to be filtered
+        db.collection('users').doc('UnssDuX1ywdCwTFIqMOT').update({
+            preferredColor: colorForm.colorName.value //Accesses the color submitted
+        }) 
 })
