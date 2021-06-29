@@ -81,11 +81,6 @@ function renderItem(doc) {
     itemList.appendChild(li);
 }
 
-db.collection('users').get().then(snapshot => {
-    snapshot.docs.forEach(doc => {
-        currColor = doc.data().preferredColor;
-    })
-})
 
 // renders each item in the Items collection in Firebase
 db.collection('Items').get().then(snapshot => {
