@@ -8,6 +8,8 @@ var storage = firebase.storage();
 // Create a storage reference from our storage service
 var storageRef = storage.ref();
 
+let currColor = "";
+
 async function getTags(doc)  {
     var str = "";
     // Not very elegant, but I searched for an hour for an alternative and couldn't find one!
@@ -22,7 +24,9 @@ async function getTags(doc)  {
     return str;
 }
 
-
+function identifyCurrColor(doc) {
+    currColor = doc.data().preferredColor;
+}
 
 function renderItem(doc) {
     // create html elements for the name, color, 
@@ -33,48 +37,29 @@ function renderItem(doc) {
     let image = document.createElement('img');
     let tagList = document.createElement('span');
 
-//    let imageName = document.createElement('span');
-//    let tag = document.createElement('input');
-//    let button = document.createElement('button');
-
-    //retrieve image, name, and color
+    // retrieve image, name, and color
     let imageName = doc.data().imageName;
     li.setAttribute('data-id', doc.id);
     name.textContent = doc.data().name;
     color.textContent = doc.data().color;
     var currImgRef = storageRef.child(doc.id.concat("/").concat(((imageName))));
-    // tag.defaultValue = "tag";
-    // button.textContent = "Add Tag";
     
-    //retrieve tags
+    // retrieve tags
     getTags(doc).then(str => {
         tagList.textContent = str;
     });
 
     // items are currently matched to their images by name
     // Daniel is working on an image storage scheme that uses references
-    //var currImgRef = storageRef.child(name.textContent.replace(" ", "_").concat(".png"));
     firebase.auth().signInAnonymously().then(function() {
         currImgRef.getDownloadURL().then(function(url) {
             image.src = url;
         })
     });
-    // .catch( error => {
-    //     console.log("Error getting image of item " + name.textContent, error);
-    // });
 
-    // button.addEventListener('click', (e) => {
-    //     e.preventDefault();
-    //     db.collection('Items').doc(doc.id).collection('tags').add({
-    //         text: tag.value
-    //     });
-    //     button.value="tag";
-    // })
 
     li.appendChild(name);
     li.appendChild(color);
-    // li.appendChild(tag);
-    // li.appendChild(button);
     li.appendChild(image);
     li.appendChild(tagList);
 
@@ -96,21 +81,27 @@ db.collection('Items').get().then(snapshot => {
     })
 })
 
+async function addTag(doc) {
+    console.log("Before");
+    await db.collection('Items').doc(doc.id).collection('tags').add({
+        text: form.tagName.value
+    });
+    console.log("After");
+}
+
 // Adds a tag to an item in Firebase
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     // Gets the item with the same name the user entered
-    db.collection('Items').where("name", "==", form.itemName.value).get()
+    db.collection('Items').where("name", "==", form.itemName.value)
+    .get()
     .then((querySnapshot) => {
         // TODO: Adds tag to item
         if(!querySnapshot.empty) {
             querySnapshot.forEach((doc) => {
-                db.collection('Items').doc(doc.id).collection('tags').add({
-                    text: form.tagName.value
-                });
-            })
-            db.collection('users').doc('UnssDuX1ywdCwTFIqMOT').update({
-                preferredColor: "pink"
+                addTag(doc).then((value) => {
+                    location.reload();
+                })
             })
         }
         else {
@@ -122,10 +113,16 @@ form.addEventListener('submit', (e) => {
     });
 })
 
+async function updateColor() {
+    await db.collection('users').doc('UnssDuX1ywdCwTFIqMOT').update({
+        preferredColor: colorForm.colorName.value //Accesses the color submitted
+    }) 
+}
+
 colorForm.addEventListener('submit', (e) => {
     e.preventDefault();
-        //Goes into this when user submits a color to be filtered
-        db.collection('users').doc('UnssDuX1ywdCwTFIqMOT').update({
-            preferredColor: colorForm.colorName.value //Accesses the color submitted
-        }) 
+        // Goes into this when user submits a color to be filtered
+        updateColor().then((value) => {
+            location.reload();
+        })
 })
