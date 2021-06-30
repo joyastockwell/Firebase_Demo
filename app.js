@@ -14,7 +14,8 @@ async function getTags(doc)  {
     var str = "";
     // Not very elegant, but I searched for an hour for an alternative and couldn't find one!
     await db.collection('Items').doc(doc.id)
-        .collection('tags').get().then(snapshot => {
+        .collection('tags').orderBy("text").get().then(snapshot => {
+            console.log("hi");
             snapshot.docs.forEach( doc => {
                 str = str.concat("#");
                 str = str.concat(doc.data().text);
